@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <time.h>
-
+#include <time.h>
 #include "lvgl/lvgl.h"
 #include "lvgl/demos/lv_demos.h"
 #include "lv_drivers/display/fbdev.h"
@@ -65,29 +65,52 @@ static void cursor_set_hidden(bool en);
  *   GLOBAL FUNCTIONS
  **********************/
 
+lv_obj_t * meter;
+lv_meter_indicator_t * indic_min ;
+lv_meter_indicator_t * indic_hour;
+LV_IMG_DECLARE(img_hand_min)
+LV_IMG_DECLARE(img_hand_hour)
 int main(int argc, char **argv)
 {
-  if(argc != 2) {
-    printf("input evdev device path\n");
-    return 0;
-  }
 
   /*Initialize LVGL*/
   lv_init();
 
   /*Initialize the HAL (display, input devices, tick) for LVGL*/
   lv_port_disp_init();
-  lv_port_indev_init(argv[1], true);
+  // lv_port_indev_init(argv[1], true);
 
   cursor_set_hidden(true);
 
-  lv_demo_benchmark();
+  meter = lv_meter_create(lv_scr_act());
+  lv_obj_set_size(meter, 220, 220);
+  lv_obj_center(meter);
 
+  /*Create a scale for the minutes*/
+  /*61 ticks in a 360 degrees range (the last and the first line overlaps)*/
+  lv_meter_scale_t * scale_min = lv_meter_add_scale(meter);
+  lv_meter_set_scale_ticks(meter, scale_min, 61, 1, 10, lv_palette_main(LV_PALETTE_GREY));
+  lv_meter_set_scale_range(meter, scale_min, 0, 60, 360, 270);
+
+  /*Create another scale for the hours. It's only visual and contains only major ticks*/
+  lv_meter_scale_t * scale_hour = lv_meter_add_scale(meter);
+  lv_meter_set_scale_ticks(meter, scale_hour, 12, 0, 0, lv_palette_main(LV_PALETTE_GREY));               /*12 ticks*/
+  lv_meter_set_scale_major_ticks(meter, scale_hour, 1, 2, 20, lv_color_black(), 10);    /*Every tick is major*/
+  lv_meter_set_scale_range(meter, scale_hour, 1, 12, 330, 300);       /*[1..12] values in an almost full circle*/
+
+  /*Add a the hands from images*/
+  indic_min = lv_meter_add_needle_img(meter, scale_min, &img_hand_min, 5, 5);
+  indic_hour = lv_meter_add_needle_img(meter, scale_hour, &img_hand_hour, 5, 5);
+  
   while(1) {
       /* Periodically call the lv_task handler.
        * It could be done in a timer interrupt or an OS task too.*/
       lv_timer_handler();
       usleep(1 * 1000);
+      time_t tt = time(NULL);
+      struct tm* t= localtime(&tt);
+      lv_meter_set_indicator_end_value(meter, indic_min, t->tm_min);
+      lv_meter_set_indicator_end_value(meter, indic_hour, t->tm_hour - 4);
   }
 
   return 0;

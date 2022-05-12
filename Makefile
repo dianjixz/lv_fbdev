@@ -1,7 +1,7 @@
 #
 # Makefile
 #
-CC ?= gcc
+CC := /opt/r329/bin/aarch64-linux-gnu-gcc
 LVGL_DIR_NAME ?= lvgl
 LVGL_DIR ?= ${shell pwd}
 

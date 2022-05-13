@@ -110,7 +110,22 @@ int main(int argc, char **argv)
       time_t tt = time(NULL);
       struct tm* t= localtime(&tt);
       lv_meter_set_indicator_end_value(meter, indic_min, t->tm_min);
-      lv_meter_set_indicator_end_value(meter, indic_hour, t->tm_hour - 4);
+      int minx = t->tm_hour + 8;
+      switch (minx)
+      {
+      case 8 ... 12:
+        lv_meter_set_indicator_end_value(meter, indic_hour, minx);
+        break;
+      case 13 ... 24:
+        lv_meter_set_indicator_end_value(meter, indic_hour, minx - 12);
+        break;
+      case 25 ... 31:
+        lv_meter_set_indicator_end_value(meter, indic_hour, minx - 24);
+        break;
+      default:
+        break;
+      }
+      
   }
 
   return 0;

@@ -9,5 +9,5 @@ add r329 support. demo for meter.
 
 add cm4stack support. demo for meter.
 ``` bash
-./demo /dev/fb0 /dev/input/event0
+./demo /dev/fb$(cat /proc/fb | grep fb_st7789v | awk '{print $1}')  /dev/input/event$(cat /proc/bus/input/devices | grep fe205000.i2c | tail -c 2)
 ```

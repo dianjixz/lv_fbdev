@@ -77,13 +77,17 @@ int main(int argc, char **argv)
   lv_init();
 
   /*Initialize the HAL (display, input devices, tick) for LVGL*/
-  lv_port_disp_init();
-  // lv_port_indev_init(argv[1], true);
+  if(argc < 3)
+  {
+    printf("please input display device and input device . ./demo /dev/fb0 /dev/input/event0\r\n");
+  }
+  lv_port_disp_init(argv[1]);
+  lv_port_indev_init(argv[2], true);
 
   cursor_set_hidden(true);
 
   meter = lv_meter_create(lv_scr_act());
-  lv_obj_set_size(meter, 220, 220);
+  lv_obj_set_size(meter, 320, 240);
   lv_obj_center(meter);
 
   /*Create a scale for the minutes*/
@@ -146,10 +150,10 @@ uint32_t custom_tick_get(void)
   return tick;
 }
 
-static void lv_port_disp_init(void)
+static void lv_port_disp_init(const char * path)
 {
   /*Linux frame buffer device init*/
-  fbdev_init();
+  fbdev_init(path);
 
   uint32_t width, height;
   fbdev_get_sizes(&width, &height);

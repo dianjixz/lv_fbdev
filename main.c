@@ -29,7 +29,7 @@
 /**********************
  *  STATIC PROTOTYPES
  **********************/
-static void lv_port_disp_init(void);
+static void lv_port_disp_init(const char * path);
 static void lv_port_indev_init(const char * path, bool show_cursor);
 static void cursor_set_hidden(bool en);
 
@@ -87,7 +87,7 @@ int main(int argc, char **argv)
   cursor_set_hidden(true);
 
   meter = lv_meter_create(lv_scr_act());
-  lv_obj_set_size(meter, 320, 240);
+  lv_obj_set_size(meter, 240, 240);
   lv_obj_center(meter);
 
   /*Create a scale for the minutes*/

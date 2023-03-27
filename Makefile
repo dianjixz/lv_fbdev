@@ -19,7 +19,7 @@ WARNINGS ?= -Wall -Wextra \
 LIBS ?= -lm
 
 CFLAGS ?= -O3 -I$(LVGL_DIR)/ $(WARNINGS) $(ASAN_FLAGS)
-LDFLAGS ?= $(LIBS) $(ASAN_FLAGS)
+LDFLAGS ?= $(LIBS) $(ASAN_FLAGS) -lpthread
 BIN = demo
 
 #Collect the files to compile
